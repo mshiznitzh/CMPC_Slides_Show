@@ -71,17 +71,17 @@ def Cleanup_Dataframe(df):
 
     return df
 
-def output_Merto_West_Data_current_year(currentyeardreleasedf, currentyeardInServicedf, currentyeardInScopingdf, currentyeardOnHolddf):
+def output_Merto_West_Data_current_year(current_year_tuple):
     strlist = ['Hold',
                'In Scoping',
                'In-Service',
                'Released']
 
     print(str(date.today().year) + ':')
-    print(' '.join([str(len(currentyeardreleasedf.index)), strlist[3]]))
-    print(' '.join([str(len(currentyeardInServicedf.index)), strlist[2]]))
-    print(' '.join([str(len(currentyeardInScopingdf.index)), strlist[1]]))
-    print(' '.join([str(len(currentyeardOnHolddf.index)), strlist[0]]))
+    print(' '.join([str(len(current_year_tuple[0].index)), strlist[3]]))
+    print(' '.join([str(len(current_year_tuple[1].index)), strlist[2]]))
+    print(' '.join([str(len(current_year_tuple[2].index)), strlist[1]]))
+    print(' '.join([str(len(current_year_tuple[3].index)), strlist[0]]))
     print('')
 
 def output_Merto_West_Data_next_year(nextyeardreleasedf, nextyeardInServicedf, nextyeardInScopingdf, nextyeardOnHolddf):
@@ -95,6 +95,33 @@ def output_Merto_West_Data_next_year(nextyeardreleasedf, nextyeardInServicedf, n
     print(' '.join([str(len(nextyeardInServicedf.index)), strlist[2]]))
     print(' '.join([str(len(nextyeardInScopingdf.index)), strlist[1]]))
     print(' '.join([str(len(nextyeardOnHolddf.index)), strlist[0]]))
+
+def query_Merto_West_Data_current_year(Project_Data_df):
+    currentyeardreleasedf = Project_Data_df[
+        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
+        (Project_Data_df['PROJECTSTATUS'] == 'Released') &
+        (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
+        (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
+
+    currentyeardInServicedf = Project_Data_df[
+        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
+        (Project_Data_df['PROJECTSTATUS'] == 'In-Service') &
+        (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
+        (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
+
+    currentyeardInScopingdf = Project_Data_df[
+        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
+        (Project_Data_df['PROJECTSTATUS'] == 'In Scoping') &
+        (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
+        (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
+
+    currentyeardOnHolddf = Project_Data_df[
+        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
+        (Project_Data_df['PROJECTSTATUS'] == 'On Hold') &
+        (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
+        (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
+
+    return currentyeardreleasedf, currentyeardInServicedf, currentyeardInScopingdf, currentyeardOnHolddf
 
 def main():
     PAT_Filename = 'PAT Grand Summary Report.xlsx'
@@ -139,29 +166,7 @@ def main():
                'have been placed In-Service ',
                'CMPC Engineering projects are scheduled to be completed during Quarter 4 of 2020']
 
-    currentyeardreleasedf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['PROJECTSTATUS'] == 'Released') &
-        (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
-        (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
-
-    currentyeardInServicedf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['PROJECTSTATUS'] == 'In-Service') &
-        (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
-        (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
-
-    currentyeardInScopingdf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['PROJECTSTATUS'] == 'In Scoping') &
-        (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
-        (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
-
-    currentyeardOnHolddf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['PROJECTSTATUS'] == 'On Hold') &
-        (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
-        (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
+    current_year_tuple = query_Merto_West_Data_current_year(Project_Data_df)
 
     nextyeardreleasedf = Project_Data_df[
         (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
@@ -187,8 +192,7 @@ def main():
         (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
         (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
 
-    output_Merto_West_Data_current_year(currentyeardreleasedf, currentyeardInServicedf, currentyeardInScopingdf,
-                                            currentyeardOnHolddf)
+    output_Merto_West_Data_current_year(current_year_tuple)
     output_Merto_West_Data_next_year(nextyeardreleasedf, nextyeardInServicedf, nextyeardInScopingdf, nextyeardOnHolddf)
 
     # print(str(date.today().year) + ':')
