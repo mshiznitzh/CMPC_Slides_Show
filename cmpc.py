@@ -210,7 +210,9 @@ def main():
     bigprojectsnotdareleaseddf = currentyeardreleasedf[(currentyeardreleasedf['Approved_WA_Amount'] >= 200000) &
                                                        (currentyeardreleasedf['BUDGETITEMNUMBER'] != '00003407')]
 
-    print(bigprojectsnotdareleaseddf)
+    bigprojectsnotdareleaseddf.to_csv('metro_west_large_no_da_released.csv')
+
+    #print(bigprojectsnotdareleaseddf)
 
     # bigprojectsnotdawithschedules = pd.merge(PScedules_df, bigprojectsnotdainservicedf , on='PETE_ID', how='inner')
     bigprojectsnotdawPE = PScedules_df[
@@ -225,7 +227,12 @@ def main():
                '- 69 KV Breaker Replacements',
                'Released',
                'In-Service',
-               'No Capital Spends']
+               'No Capital Spends',
+               '- 345KV Breaker Replacements']
+
+    EHVbreakerreplacementscurrentyeardf = Project_Data_df[
+        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
+        (Project_Data_df['BUDGETITEMNUMBER'] == '00003201')]
 
     HVbreakerreplacementscurrentyeardf = Project_Data_df[
         (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
@@ -238,6 +245,10 @@ def main():
     MDbreakerreplacementscurrentyearddf = Project_Data_df[
         (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
         (Project_Data_df['BUDGETITEMNUMBER'] == '00003203')]
+
+    EHVbreakerreplacementsnextyeardf = Project_Data_df[
+        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
+        (Project_Data_df['BUDGETITEMNUMBER'] == '00003201')]
 
     HVbreakerreplacementsnextyeardf = Project_Data_df[
         (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
@@ -252,12 +263,14 @@ def main():
         (Project_Data_df['BUDGETITEMNUMBER'] == '00003203')]
 
     print(str(date.today().year) + ':')
+    print(' '.join([str(len(EHVbreakerreplacementscurrentyeardf.index)), strlist[6]]))
     print(' '.join([str(len(HVbreakerreplacementscurrentyeardf.index)), strlist[0]]))
     print(' '.join([str(len(FIDcurrentyearddf.index)), strlist[1]]))
     print(' '.join([str(len(MDbreakerreplacementscurrentyearddf.index)), strlist[2]]))
 
     print('')
     print(str(date.today().year + 1) + ':')
+    print(' '.join([str(len(EHVbreakerreplacementsnextyeardf.index)), strlist[6]]))
     print(' '.join([str(len(HVbreakerreplacementsnextyeardf.index)), strlist[0]]))
     print(' '.join([str(len(FIDnextyearddf.index)), strlist[1]]))
     print(' '.join([str(len(MDbreakerreplacementsnextyearddf.index)), strlist[2]]))
@@ -382,6 +395,6 @@ if __name__ == "__main__":
     logger = logging.getLogger('root')
     FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
     logging.basicConfig(format=FORMAT)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
 
     main()
