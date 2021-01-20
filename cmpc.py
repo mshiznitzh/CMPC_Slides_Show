@@ -71,6 +71,30 @@ def Cleanup_Dataframe(df):
 
     return df
 
+def output_Merto_West_Data_current_year(currentyeardreleasedf, currentyeardInServicedf, currentyeardInScopingdf, currentyeardOnHolddf):
+    strlist = ['Hold',
+               'In Scoping',
+               'In-Service',
+               'Released']
+
+    print(str(date.today().year) + ':')
+    print(' '.join([str(len(currentyeardreleasedf.index)), strlist[3]]))
+    print(' '.join([str(len(currentyeardInServicedf.index)), strlist[2]]))
+    print(' '.join([str(len(currentyeardInScopingdf.index)), strlist[1]]))
+    print(' '.join([str(len(currentyeardOnHolddf.index)), strlist[0]]))
+    print('')
+
+def output_Merto_West_Data_next_year(nextyeardreleasedf, nextyeardInServicedf, nextyeardInScopingdf, nextyeardOnHolddf):
+    strlist = ['Hold',
+               'In Scoping',
+               'In-Service',
+               'Released']
+
+    print(str(date.today().year + 1) + ':')
+    print(' '.join([str(len(nextyeardreleasedf.index)), strlist[3]]))
+    print(' '.join([str(len(nextyeardInServicedf.index)), strlist[2]]))
+    print(' '.join([str(len(nextyeardInScopingdf.index)), strlist[1]]))
+    print(' '.join([str(len(nextyeardOnHolddf.index)), strlist[0]]))
 
 def main():
     PAT_Filename = 'PAT Grand Summary Report.xlsx'
@@ -163,17 +187,21 @@ def main():
         (Project_Data_df['REGIONNAME'] == 'METRO WEST') &
         (Project_Data_df['PROJECTCATEGORY'] == 'CMPC')]
 
-    print(str(date.today().year) + ':')
-    print(' '.join([str(len(currentyeardreleasedf.index)), strlist[3]]))
-    print(' '.join([str(len(currentyeardInServicedf.index)), strlist[2]]))
-    print(' '.join([str(len(currentyeardInScopingdf.index)), strlist[1]]))
-    print(' '.join([str(len(currentyeardOnHolddf.index)), strlist[0]]))
-    print('')
-    print(str(date.today().year + 1) + ':')
-    print(' '.join([str(len(nextyeardreleasedf.index)), strlist[3]]))
-    print(' '.join([str(len(nextyeardInServicedf.index)), strlist[2]]))
-    print(' '.join([str(len(nextyeardInScopingdf.index)), strlist[1]]))
-    print(' '.join([str(len(nextyeardOnHolddf.index)), strlist[0]]))
+    output_Merto_West_Data_current_year(currentyeardreleasedf, currentyeardInServicedf, currentyeardInScopingdf,
+                                            currentyeardOnHolddf)
+    output_Merto_West_Data_next_year(nextyeardreleasedf, nextyeardInServicedf, nextyeardInScopingdf, nextyeardOnHolddf)
+
+    # print(str(date.today().year) + ':')
+    # print(' '.join([str(len(currentyeardreleasedf.index)), strlist[3]]))
+    # print(' '.join([str(len(currentyeardInServicedf.index)), strlist[2]]))
+    # print(' '.join([str(len(currentyeardInScopingdf.index)), strlist[1]]))
+    # print(' '.join([str(len(currentyeardOnHolddf.index)), strlist[0]]))
+    # print('')
+    # print(str(date.today().year + 1) + ':')
+    # print(' '.join([str(len(nextyeardreleasedf.index)), strlist[3]]))
+    # print(' '.join([str(len(nextyeardInServicedf.index)), strlist[2]]))
+    # print(' '.join([str(len(nextyeardInScopingdf.index)), strlist[1]]))
+    # print(' '.join([str(len(nextyeardOnHolddf.index)), strlist[0]]))
 
     currentyeartotalproject = sum(
         [len(currentyeardreleasedf.index), len(currentyeardInServicedf.index), len(currentyeardInScopingdf.index),
