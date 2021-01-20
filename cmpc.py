@@ -203,7 +203,7 @@ def current_year_data_drive_output(current_year_tuple):
     return bigprojectsnotdareleaseddf
 
 
-def Programs_data_query(Project_Data_df):
+def query_Programs_data(Project_Data_df):
 
     EHVbreakerreplacementscurrentyeardf = pd.DataFrame().reindex_like(Project_Data_df)
     HVbreakerreplacementscurrentyeardf = pd.DataFrame().reindex_like(Project_Data_df)
@@ -269,7 +269,7 @@ def Programs_data_query(Project_Data_df):
 
     return tuple
 
-def Programs_data_output(Programs_data_df):
+def  output_Programs_data(Programs_data_df):
     EHVbreakerreplacementscurrentyeardf = Programs_data_df[0]
     HVbreakerreplacementscurrentyeardf = Programs_data_df[1]
     FIDcurrentyearddf = Programs_data_df[2]
@@ -428,9 +428,10 @@ def main():
     Project_Data_df = pd.merge(Project_Data_df, patdf, on='PETE_ID', how='outer')
 
     Project_Data_df.info()
+
     current_year_tuple = query_Merto_West_Data_current_year(Project_Data_df)
     next_year_tuple = query_Merto_West_Data_next_year(Project_Data_df)
-
+    Programs_data_df = query_Programs_data(Project_Data_df)
 
     output_Merto_West_Data_current_year(current_year_tuple)
     output_Merto_West_Data_next_year(next_year_tuple)
@@ -447,8 +448,8 @@ def main():
 
    # bigprojectsnotdawPE.to_csv('metro_west_large_PE.csv')
 
-    Programs_data_df=Programs_data_query(Project_Data_df)
-    Programs_data_output(Programs_data_df)
+
+    output_Programs_data(Programs_data_df)
 
 
 
