@@ -202,69 +202,87 @@ def current_year_data_drive_output(current_year_tuple):
                                                        (current_year_tuple[0]['BUDGETITEMNUMBER'] != '00003407')]
     return bigprojectsnotdareleaseddf
 
-def main():
-    PAT_Filename = 'PAT Grand Summary Report.xlsx'
-    Project_Data_Filename = 'All Project Data Report Metro West or Mike.xlsx'
-    Schedules_Filename = 'Metro West PETE Schedules.xlsx'
-    """ Main entry point of the app """
-    logger.info("Starting Pete Maintenance Helper")
-    Change_Working_Path('./Data')
-    try:
-        Project_Data_df = Excel_to_Pandas(Project_Data_Filename)
-    except:
-        logger.error('Can not find Project Data file')
-        raise
-    try:
-        PScedules_df = Excel_to_Pandas(Schedules_Filename)
-    except:
-        logger.error('Can not find Project Data file')
-        raise
 
-    try:
-        patdf = Excel_to_Pandas(PAT_Filename)
-    except:
-        logger.error('Can not find Project Data file')
-        raise
-    # patdf= patdf['PETE_ID','WA_Amount_Grand_Summary']
-    Project_Data_df = pd.merge(Project_Data_df, patdf, on='PETE_ID', how='outer')
+def Programs_data_query(Project_Data_df):
 
-    Project_Data_df.info()
+    EHVbreakerreplacementscurrentyeardf = pd.DataFrame().reindex_like(Project_Data_df)
+    HVbreakerreplacementscurrentyeardf = pd.DataFrame().reindex_like(Project_Data_df)
+    FIDcurrentyearddf = pd.DataFrame().reindex_like(Project_Data_df)
+    MDbreakerreplacementscurrentyearddf = pd.DataFrame().reindex_like(Project_Data_df)
+    Linehardingcurrentyeardf = pd.DataFrame().reindex_like(Project_Data_df)
+    Watercrossingscurrentyeardf =  pd.DataFrame().reindex_like(Project_Data_df)
+    EHVbreakerreplacementsnextyeardf = pd.DataFrame().reindex_like(Project_Data_df)
+    HVbreakerreplacementsnextyeardf = pd.DataFrame().reindex_like(Project_Data_df)
+    FIDnextyearddf = pd.DataFrame().reindex_like(Project_Data_df)
+    MDbreakerreplacementsnextyearddf = pd.DataFrame().reindex_like(Project_Data_df)
+    Linehardingnextyeardf = pd.DataFrame().reindex_like(Project_Data_df)
+    Watercrossingsnextyeardf = pd.DataFrame().reindex_like(Project_Data_df)
 
-    strlist = ['Hold',
-               'In Scoping',
-               'In-Service',
-               'Released',
-               ': Number of ',
-               ' Metro West CMPC Engineering projects',
-               'Total number of the ',
-               'Metro West CMPM Engineering projects that have approved WA > $200,000',
-               'of those projects are Distribution Automation',
-               'Excluding the DA projects,',
-               'CMPC Engineering projects have approved WA amounts of > $200,000.',
-               'of the',
-               'have been placed In-Service ',
-               'CMPC Engineering projects are scheduled to be completed during Quarter 4 of 2020']
-
-    current_year_tuple = query_Merto_West_Data_current_year(Project_Data_df)
-    next_year_tuple = query_Merto_West_Data_next_year(Project_Data_df)
+    budget_items_list = ['00003201', '00003202', '00003206', '00003203', '00003212', '00003226']
+    Year_list = [date.today().year, date.today().year + 1]
+    for bugget_item in budget_items_list:
+        for year in Year_list:
+            df = Project_Data_df[
+                (Project_Data_df['Estimated_In-Service_Date'].dt.year == year) &
+                (Project_Data_df['BUDGETITEMNUMBER'] == bugget_item)]
+            if bugget_item == '00003201' and year == date.today().year:
+                EHVbreakerreplacementscurrentyeardf = df
+            elif bugget_item == '00003202' and year == date.today().year:
+                HVbreakerreplacementscurrentyeardf = df
+            elif bugget_item == '00003206' and year == date.today().year:
+                FIDcurrentyearddf = df
+            elif bugget_item == '00003203' and year == date.today().year:
+                MDbreakerreplacementscurrentyearddf = df
+            elif bugget_item == '00003212' and year == date.today().year:
+                Linehardingcurrentyeardf = df
+            elif bugget_item == '00003226' and year == date.today().year:
+                Watercrossingscurrentyeardf = df
 
 
-    output_Merto_West_Data_current_year(current_year_tuple)
-    output_Merto_West_Data_next_year(next_year_tuple)
+            elif bugget_item == '00003201' and year == date.today().year + 1:
+                EHVbreakerreplacementsnextyeardf = df
+            elif bugget_item == '00003202' and year == date.today().year + 1:
+                HVbreakerreplacementsnextyeardf = df
+            elif bugget_item == '00003206' and year == date.today().year + 1:
+                FIDnextyearddf = df
+            elif bugget_item == '00003203' and year == date.today().year + 1:
+                MDbreakerreplacementsnextyearddf = df
+            elif bugget_item == '00003212' and year == date.today().year + 1:
+                Linehardingnextyeardf = df
+            elif bugget_item == '00003226' and year == date.today().year + 1:
+                Watercrossingsnextyeardf = df
 
-    bigprojectsnotdareleaseddf =current_year_data_drive_output(current_year_tuple)
-    bigprojectsnotdareleaseddf.to_csv('metro_west_large_no_da_released.csv')
 
-    #print(bigprojectsnotdareleaseddf)
 
-    # bigprojectsnotdawithschedules = pd.merge(PScedules_df, bigprojectsnotdainservicedf , on='PETE_ID', how='inner')
-    bigprojectsnotdawPE = PScedules_df[
-        (PScedules_df['Grandchild'] == 'Project Energization') &
-        (PScedules_df['PETE_ID'].isin(bigprojectsnotdareleaseddf['PETE_ID']))]
+    tuple = EHVbreakerreplacementscurrentyeardf,\
+            HVbreakerreplacementscurrentyeardf,\
+            FIDcurrentyearddf,\
+            MDbreakerreplacementscurrentyearddf, \
+            Linehardingcurrentyeardf, \
+            Watercrossingscurrentyeardf,\
+            EHVbreakerreplacementsnextyeardf,\
+            HVbreakerreplacementsnextyeardf,\
+            FIDnextyearddf,\
+            MDbreakerreplacementsnextyearddf,\
+            Linehardingnextyeardf,\
+            Watercrossingsnextyeardf
 
-    bigprojectsnotdawPE.to_csv('metro_west_large_PE.csv')
+    return tuple
 
-    # PEC Slide
+def Programs_data_output(Programs_data_df):
+    EHVbreakerreplacementscurrentyeardf = Programs_data_df[0]
+    HVbreakerreplacementscurrentyeardf = Programs_data_df[1]
+    FIDcurrentyearddf = Programs_data_df[2]
+    MDbreakerreplacementscurrentyearddf = Programs_data_df[3]
+    Linehardingcurrentyeardf = Programs_data_df[4]
+    Watercrossingscurrentyeardf = Programs_data_df[5]
+    EHVbreakerreplacementsnextyeardf = Programs_data_df[6]
+    HVbreakerreplacementsnextyeardf = Programs_data_df[7]
+    FIDnextyearddf = Programs_data_df[8]
+    MDbreakerreplacementsnextyearddf = Programs_data_df[9]
+    Linehardingnextyeardf = Programs_data_df[10]
+    Watercrossingsnextyeardf = Programs_data_df[11]
+
     strlist = ['- 138KV Breaker Replacements',
                '- FID Replacements',
                '- 69 KV Breaker Replacements',
@@ -272,39 +290,7 @@ def main():
                'In-Service',
                'No Capital Spends',
                '- 345KV Breaker Replacements']
-
-    EHVbreakerreplacementscurrentyeardf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003201')]
-
-    HVbreakerreplacementscurrentyeardf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003202')]
-
-    FIDcurrentyearddf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003206')]
-
-    MDbreakerreplacementscurrentyearddf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003203')]
-
-    EHVbreakerreplacementsnextyeardf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003201')]
-
-    HVbreakerreplacementsnextyeardf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003202')]
-
-    FIDnextyearddf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003206')]
-
-    MDbreakerreplacementsnextyearddf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003203')]
-
+#PEC
     print(str(date.today().year) + ':')
     print(' '.join([str(len(EHVbreakerreplacementscurrentyeardf.index)), strlist[6]]))
     print(' '.join([str(len(HVbreakerreplacementscurrentyeardf.index)), strlist[0]]))
@@ -321,7 +307,7 @@ def main():
 
     print(strlist[0])
     print(' '.join([str(
-        len(HVbreakerreplacementscurrentyeardf[HVbreakerreplacementscurrentyeardf['PROJECTSTATUS'] == 'Released'])),
+        len(Programs_data_df[1][HVbreakerreplacementscurrentyeardf['PROJECTSTATUS'] == 'Released'])),
                     strlist[3]]))
     print(' '.join([str(
         len(HVbreakerreplacementscurrentyeardf[HVbreakerreplacementscurrentyeardf['PROJECTSTATUS'] == 'In-Service'])),
@@ -330,6 +316,7 @@ def main():
         len(HVbreakerreplacementscurrentyeardf[
                 HVbreakerreplacementscurrentyeardf['PROJECTSTATUS'] == 'No Capital Spend'])),
         strlist[5]]))
+
     print('')
     print(strlist[1])
     print(' '.join([str(
@@ -357,53 +344,34 @@ def main():
         strlist[5]]))
     print('')
 
-    # Tline Harding
-
-    Watercrossingscurrentyeardf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003212')]
-
-    Watercrossingsnextyeardf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003212')]
-
     print('T Line Harding')
     print(str(date.today().year) + ':')
     print(' '.join([str(
-        len(Watercrossingscurrentyeardf[Watercrossingscurrentyeardf['PROJECTSTATUS'] == 'Released'])),
+        len(Linehardingcurrentyeardf[Linehardingcurrentyeardf['PROJECTSTATUS'] == 'Released'])),
         strlist[3]]))
 
     print(' '.join([str(
-        len(Watercrossingscurrentyeardf[Watercrossingscurrentyeardf['PROJECTSTATUS'] == 'Engineering Only'])),
+        len(Linehardingcurrentyeardf[Linehardingcurrentyeardf['PROJECTSTATUS'] == 'Engineering Only'])),
         'Engineering Only']))
 
     print(' '.join([str(
-        len(Watercrossingscurrentyeardf[Watercrossingscurrentyeardf['PROJECTSTATUS'] == 'In-Service'])),
+        len(Linehardingcurrentyeardf[Linehardingcurrentyeardf['PROJECTSTATUS'] == 'In-Service'])),
         'In-Service']))
 
     print(str(date.today().year + 1) + ':')
     print(' '.join([str(
-        len(Watercrossingsnextyeardf[Watercrossingsnextyeardf['PROJECTSTATUS'] == 'Released'])),
+        len(Linehardingnextyeardf[Linehardingnextyeardf['PROJECTSTATUS'] == 'Released'])),
         strlist[3]]))
 
     print(' '.join([str(
-        len(Watercrossingsnextyeardf[Watercrossingsnextyeardf['PROJECTSTATUS'] == 'Engineering Only'])),
+        len(Linehardingnextyeardf[Linehardingnextyeardf['PROJECTSTATUS'] == 'Engineering Only'])),
         'Engineering Only']))
 
     print(' '.join([str(
-        len(Watercrossingsnextyeardf[Watercrossingsnextyeardf['PROJECTSTATUS'] == 'Draft'])),
+        len(Linehardingnextyeardf[Linehardingnextyeardf['PROJECTSTATUS'] == 'Draft'])),
         'Draft']))
 
-    # Water Crossing
-
-    Watercrossingscurrentyeardf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003226')]
-
-    Watercrossingsnextyeardf = Project_Data_df[
-        (Project_Data_df['Estimated_In-Service_Date'].dt.year == date.today().year + 1) &
-        (Project_Data_df['BUDGETITEMNUMBER'] == '00003226')]
-
+    print('')
     print('Water Crossing')
     print(str(date.today().year) + ':')
     print(' '.join([str(
@@ -418,6 +386,8 @@ def main():
         len(Watercrossingscurrentyeardf[Watercrossingscurrentyeardf['PROJECTSTATUS'] == 'In-Service'])),
         'In-Service']))
 
+    print('')
+
     print(str(date.today().year + 1) + ':')
     print(' '.join([str(
         len(Watercrossingsnextyeardf[Watercrossingsnextyeardf['PROJECTSTATUS'] == 'Released'])),
@@ -430,6 +400,57 @@ def main():
     print(' '.join([str(
         len(Watercrossingsnextyeardf[Watercrossingsnextyeardf['PROJECTSTATUS'] == 'Draft'])),
         'Draft']))
+
+def main():
+    PAT_Filename = 'PAT Grand Summary Report.xlsx'
+    Project_Data_Filename = 'All Project Data Report Metro West or Mike.xlsx'
+    Schedules_Filename = 'Metro West PETE Schedules.xlsx'
+    """ Main entry point of the app """
+    logger.info("Starting Pete Maintenance Helper")
+    Change_Working_Path('./Data')
+    try:
+        Project_Data_df = Excel_to_Pandas(Project_Data_Filename)
+    except:
+        logger.error('Can not find Project Data file')
+        raise
+    try:
+        PScedules_df = Excel_to_Pandas(Schedules_Filename)
+    except:
+        logger.error('Can not find Project Data file')
+        raise
+
+    try:
+        patdf = Excel_to_Pandas(PAT_Filename)
+    except:
+        logger.error('Can not find Project Data file')
+        raise
+    # patdf= patdf['PETE_ID','WA_Amount_Grand_Summary']
+    Project_Data_df = pd.merge(Project_Data_df, patdf, on='PETE_ID', how='outer')
+
+    Project_Data_df.info()
+    current_year_tuple = query_Merto_West_Data_current_year(Project_Data_df)
+    next_year_tuple = query_Merto_West_Data_next_year(Project_Data_df)
+
+
+    output_Merto_West_Data_current_year(current_year_tuple)
+    output_Merto_West_Data_next_year(next_year_tuple)
+
+    bigprojectsnotdareleaseddf = current_year_data_drive_output(current_year_tuple)
+   # bigprojectsnotdareleaseddf.to_csv('metro_west_large_no_da_released.csv')
+
+    #print(bigprojectsnotdareleaseddf)
+
+    # bigprojectsnotdawithschedules = pd.merge(PScedules_df, bigprojectsnotdainservicedf , on='PETE_ID', how='inner')
+   # bigprojectsnotdawPE = PScedules_df[
+     #   (PScedules_df['Grandchild'] == 'Project Energization') &
+     #   (PScedules_df['PETE_ID'].isin(bigprojectsnotdareleaseddf['PETE_ID']))]
+
+   # bigprojectsnotdawPE.to_csv('metro_west_large_PE.csv')
+
+    Programs_data_df=Programs_data_query(Project_Data_df)
+    Programs_data_output(Programs_data_df)
+
+
 
 
 if __name__ == "__main__":
