@@ -123,6 +123,58 @@ def query_Merto_West_Data_current_year(Project_Data_df):
 
     return currentyeardreleasedf, currentyeardInServicedf, currentyeardInScopingdf, currentyeardOnHolddf
 
+def current_year_data_drive_output(current_year_tuple):
+    strlist = ['Hold',
+               'In Scoping',
+               'In-Service',
+               'Released',
+               ': Number of ',
+               ' Metro West CMPC Engineering projects',
+               'Total number of the ',
+               'Metro West CMPM Engineering projects that have approved WA > $200,000',
+               'of those projects are Distribution Automation',
+               'Excluding the DA projects,',
+               'CMPC Engineering projects have approved WA amounts of > $200,000.',
+               'of the',
+               'have been placed In-Service ',
+               'CMPC Engineering projects are scheduled to be completed during Quarter 4 of 2020']
+
+    currentyeartotalproject = sum(
+        [len(current_year_tuple[0].index), len(current_year_tuple[1].index), len(current_year_tuple[2].index),
+         len(current_year_tuple[3].index)])
+    print('')
+    print(''.join([str(currentyeartotalproject), strlist[4], str(date.today().year), strlist[5]]))
+
+    bigprojects = len(current_year_tuple[0][current_year_tuple[0]['Approved_WA_Amount'] >= 200000]) + len(
+        current_year_tuple[1][current_year_tuple[1]['Approved_WA_Amount'] >= 200000])
+
+    bigprojectsda = len(current_year_tuple[0][(current_year_tuple[0]['Approved_WA_Amount'] >= 200000) &
+                                              (current_year_tuple[0]['BUDGETITEMNUMBER'] == '00003407')]) + len(
+        current_year_tuple[1][(current_year_tuple[1]['Approved_WA_Amount'] >= 200000) &
+                                (current_year_tuple[1]['BUDGETITEMNUMBER'] == '00003407')])
+
+    bigprojectsnotdareleased = len(current_year_tuple[0][(current_year_tuple[0]['Approved_WA_Amount'] >= 200000) &
+                                                         (current_year_tuple[0]['BUDGETITEMNUMBER'] != '00003407')])
+
+    bigprojectsnotdainservice = len(current_year_tuple[1][(current_year_tuple[1]['Approved_WA_Amount'] >= 200000) &
+                                                            (current_year_tuple[1][
+                                                                 'BUDGETITEMNUMBER'] != '00003407')])
+
+    print(' '.join([str(bigprojects), strlist[7]]))
+    print(' '.join([str(bigprojectsda), strlist[8]]))
+
+    print(' '.join([strlist[9], str(bigprojectsnotdareleased + bigprojectsnotdainservice), strlist[10]]))
+
+    print(
+        ' '.join([str(bigprojectsnotdainservice), strlist[11], str(bigprojectsnotdareleased + bigprojectsnotdainservice)
+                     , strlist[12]]))
+
+    print('')
+
+    bigprojectsnotdareleaseddf = current_year_tuple[0][(current_year_tuple[0]['Approved_WA_Amount'] >= 200000) &
+                                                       (current_year_tuple[0]['BUDGETITEMNUMBER'] != '00003407')]
+    return bigprojectsnotdareleaseddf
+
 def main():
     PAT_Filename = 'PAT Grand Summary Report.xlsx'
     Project_Data_Filename = 'All Project Data Report Metro West or Mike.xlsx'
@@ -207,41 +259,41 @@ def main():
     # print(' '.join([str(len(nextyeardInScopingdf.index)), strlist[1]]))
     # print(' '.join([str(len(nextyeardOnHolddf.index)), strlist[0]]))
 
-    currentyeartotalproject = sum(
-        [len(currentyeardreleasedf.index), len(currentyeardInServicedf.index), len(currentyeardInScopingdf.index),
-         len(currentyeardOnHolddf.index)])
-    print('')
-    print(''.join([str(currentyeartotalproject), strlist[4], str(date.today().year), strlist[5]]))
-
-    bigprojects = len(currentyeardreleasedf[currentyeardreleasedf['Approved_WA_Amount'] >= 200000]) + len(
-        currentyeardInServicedf[currentyeardInServicedf['Approved_WA_Amount'] >= 200000])
-
-    bigprojectsda = len(currentyeardreleasedf[(currentyeardreleasedf['Approved_WA_Amount'] >= 200000) &
-                                              (currentyeardreleasedf['BUDGETITEMNUMBER'] == '00003407')]) + len(
-        currentyeardInServicedf[(currentyeardInServicedf['Approved_WA_Amount'] >= 200000) &
-                                (currentyeardInServicedf['BUDGETITEMNUMBER'] == '00003407')])
-
-    bigprojectsnotdareleased = len(currentyeardreleasedf[(currentyeardreleasedf['Approved_WA_Amount'] >= 200000) &
-                                                         (currentyeardreleasedf['BUDGETITEMNUMBER'] != '00003407')])
-
-    bigprojectsnotdainservice = len(currentyeardInServicedf[(currentyeardInServicedf['Approved_WA_Amount'] >= 200000) &
-                                                            (currentyeardInServicedf[
-                                                                 'BUDGETITEMNUMBER'] != '00003407')])
-
-    print(' '.join([str(bigprojects), strlist[7]]))
-    print(' '.join([str(bigprojectsda), strlist[8]]))
-
-    print(' '.join([strlist[9], str(bigprojectsnotdareleased + bigprojectsnotdainservice), strlist[10]]))
-
-    print(
-        ' '.join([str(bigprojectsnotdainservice), strlist[11], str(bigprojectsnotdareleased + bigprojectsnotdainservice)
-                     , strlist[12]]))
-
-    print('')
-
-    bigprojectsnotdareleaseddf = currentyeardreleasedf[(currentyeardreleasedf['Approved_WA_Amount'] >= 200000) &
-                                                       (currentyeardreleasedf['BUDGETITEMNUMBER'] != '00003407')]
-
+    # currentyeartotalproject = sum(
+    #     [len(currentyeardreleasedf.index), len(currentyeardInServicedf.index), len(currentyeardInScopingdf.index),
+    #      len(currentyeardOnHolddf.index)])
+    # print('')
+    # print(''.join([str(currentyeartotalproject), strlist[4], str(date.today().year), strlist[5]]))
+    #
+    # bigprojects = len(currentyeardreleasedf[currentyeardreleasedf['Approved_WA_Amount'] >= 200000]) + len(
+    #     currentyeardInServicedf[currentyeardInServicedf['Approved_WA_Amount'] >= 200000])
+    #
+    # bigprojectsda = len(currentyeardreleasedf[(currentyeardreleasedf['Approved_WA_Amount'] >= 200000) &
+    #                                           (currentyeardreleasedf['BUDGETITEMNUMBER'] == '00003407')]) + len(
+    #     currentyeardInServicedf[(currentyeardInServicedf['Approved_WA_Amount'] >= 200000) &
+    #                             (currentyeardInServicedf['BUDGETITEMNUMBER'] == '00003407')])
+    #
+    # bigprojectsnotdareleased = len(currentyeardreleasedf[(currentyeardreleasedf['Approved_WA_Amount'] >= 200000) &
+    #                                                      (currentyeardreleasedf['BUDGETITEMNUMBER'] != '00003407')])
+    #
+    # bigprojectsnotdainservice = len(currentyeardInServicedf[(currentyeardInServicedf['Approved_WA_Amount'] >= 200000) &
+    #                                                         (currentyeardInServicedf[
+    #                                                              'BUDGETITEMNUMBER'] != '00003407')])
+    #
+    # print(' '.join([str(bigprojects), strlist[7]]))
+    # print(' '.join([str(bigprojectsda), strlist[8]]))
+    #
+    # print(' '.join([strlist[9], str(bigprojectsnotdareleased + bigprojectsnotdainservice), strlist[10]]))
+    #
+    # print(
+    #     ' '.join([str(bigprojectsnotdainservice), strlist[11], str(bigprojectsnotdareleased + bigprojectsnotdainservice)
+    #                  , strlist[12]]))
+    #
+    # print('')
+    #
+    # bigprojectsnotdareleaseddf = currentyeardreleasedf[(currentyeardreleasedf['Approved_WA_Amount'] >= 200000) &
+    #                                                    (currentyeardreleasedf['BUDGETITEMNUMBER'] != '00003407')]
+    bigprojectsnotdareleaseddf =current_year_data_drive_output(current_year_tuple)
     bigprojectsnotdareleaseddf.to_csv('metro_west_large_no_da_released.csv')
 
     #print(bigprojectsnotdareleaseddf)
