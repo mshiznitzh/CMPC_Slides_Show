@@ -12,10 +12,6 @@ import glob
 import os
 from datetime import date
 
-# from xlsxwriter.utility import xl_rowcol_to_cell
-from dateutil.tz import tzutc
-import numpy as np
-
 
 # OS Functions
 def filesearch(word=""):
