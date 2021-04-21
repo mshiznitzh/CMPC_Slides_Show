@@ -63,7 +63,7 @@ partd==1.1.0
 Paste==3.4.0
 pdfarranger==1.7.0
 pexpect==4.8.0
-pikepdf==1.19.4
+pikepdf==2.10.0
 Pillow==7.2.0
 platformio==4.3.4
 ply==3.11
