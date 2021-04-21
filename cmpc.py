@@ -201,18 +201,18 @@ def current_year_data_drive_output(current_year_tuple):
 
 def query_Programs_data(Project_Data_df):
 
-    EHVbreakerreplacementscurrentyeardf = pd.DataFrame().reindex_like(Project_Data_df)
-    HVbreakerreplacementscurrentyeardf = pd.DataFrame().reindex_like(Project_Data_df)
-    FIDcurrentyearddf = pd.DataFrame().reindex_like(Project_Data_df)
-    MDbreakerreplacementscurrentyearddf = pd.DataFrame().reindex_like(Project_Data_df)
-    Linehardingcurrentyeardf = pd.DataFrame().reindex_like(Project_Data_df)
-    Watercrossingscurrentyeardf =  pd.DataFrame().reindex_like(Project_Data_df)
-    EHVbreakerreplacementsnextyeardf = pd.DataFrame().reindex_like(Project_Data_df)
-    HVbreakerreplacementsnextyeardf = pd.DataFrame().reindex_like(Project_Data_df)
-    FIDnextyearddf = pd.DataFrame().reindex_like(Project_Data_df)
-    MDbreakerreplacementsnextyearddf = pd.DataFrame().reindex_like(Project_Data_df)
-    Linehardingnextyeardf = pd.DataFrame().reindex_like(Project_Data_df)
-    Watercrossingsnextyeardf = pd.DataFrame().reindex_like(Project_Data_df)
+    EHVbreakerreplacementscurrentyeardf = pd.DataFrame()
+    HVbreakerreplacementscurrentyeardf = pd.DataFrame()
+    FIDcurrentyearddf = pd.DataFrame()
+    MDbreakerreplacementscurrentyearddf = pd.DataFrame()
+    Linehardingcurrentyeardf = pd.DataFrame()
+    Watercrossingscurrentyeardf =  pd.DataFrame()
+    EHVbreakerreplacementsnextyeardf = pd.DataFrame()
+    HVbreakerreplacementsnextyeardf = pd.DataFrame()
+    FIDnextyearddf = pd.DataFrame()
+    MDbreakerreplacementsnextyearddf = pd.DataFrame()
+    Linehardingnextyeardf = pd.DataFrame()
+    Watercrossingsnextyeardf = pd.DataFrame()
 
     budget_items_list = ['00003201', '00003202', '00003206', '00003203', '00003212', '00003226']
     Year_list = [date.today().year, date.today().year + 1]
@@ -265,7 +265,39 @@ def query_Programs_data(Project_Data_df):
 
     return tuple
 
-def  output_Programs_data(Programs_data_df):
+def output_schedule_data(program_df, schedule_df):
+    for id in program_df['PETE_ID']:
+        temp_df = schedule_df.query('PETE_ID == @id & Grandchild == "Project Energization"')
+        if temp_df.shape[0] >= 1:
+            print('PETE ' + str(temp_df['PETE_ID'].iloc[0]) + ' - Project Energization ' + str(
+                temp_df['Start_Date'].iloc[0]))
+
+        else:
+            print('PETE ' + str(id) + ' has no Project Energization date')
+        temp_df = schedule_df.query('PETE_ID == @id & Child == "Construction Summary"')
+        temp_df = temp_df.sort_values(by='Start_Date', ascending=True, na_position='last')
+
+        if temp_df.shape[0] >= 1:
+            print('        - Construnction Start ' + str(temp_df['Start_Date'].iloc[0]))
+        else:
+            print('PETE ' + str(id) + ' has no Construction Summary')
+
+        temp_df = schedule_df.query('PETE_ID == @id & Child == "Construction Summary"')
+        temp_df = temp_df.sort_values(by='Finish_Date', ascending=False, na_position='last')
+
+        if temp_df.shape[0] >= 1:
+            print('        - Construction Finish ' + str(temp_df['Finish_Date'].iloc[0]))
+        else:
+            print('PETE ' + str(id) + ' has no Construction Summary')
+
+        print('')
+        # print('PETE ' + str(schedule_df.at[1, 'PETE_ID']) + ' - Construnction Start ' + str(
+        #     schedule_df.at[1, 'Start_Date']))
+        # print('PETE ' + str(schedule_df.at[1, 'PETE_ID']) + ' - Construnction Finish ' + str(
+        #     schedule_df.at[1, 'Finish_Date']))
+    print('')
+
+def  output_Programs_data(Programs_data_df, schedule_df):
     EHVbreakerreplacementscurrentyeardf = Programs_data_df[0]
     HVbreakerreplacementscurrentyeardf = Programs_data_df[1]
     FIDcurrentyearddf = Programs_data_df[2]
@@ -278,6 +310,8 @@ def  output_Programs_data(Programs_data_df):
     MDbreakerreplacementsnextyearddf = Programs_data_df[9]
     Linehardingnextyeardf = Programs_data_df[10]
     Watercrossingsnextyeardf = Programs_data_df[11]
+
+    MDbreakerreplacementscurrentyearddf.reset_index(drop=True, inplace=True)
 
     strlist = ['- 138KV Breaker Replacements',
                '- FID Replacements',
@@ -314,6 +348,9 @@ def  output_Programs_data(Programs_data_df):
         strlist[5]]))
 
     print('')
+    output_schedule_data(HVbreakerreplacementscurrentyeardf, schedule_df)
+
+    print('')
     print(strlist[1])
     print(' '.join([str(
         len(FIDcurrentyearddf[FIDcurrentyearddf['PROJECTSTATUS'] == 'Released'])),
@@ -327,6 +364,10 @@ def  output_Programs_data(Programs_data_df):
         strlist[5]]))
 
     print('')
+    output_schedule_data(FIDcurrentyearddf, schedule_df)
+
+
+    print('')
     print(strlist[2])
     print(' '.join([str(
         len(MDbreakerreplacementscurrentyearddf[MDbreakerreplacementscurrentyearddf['PROJECTSTATUS'] == 'Released'])),
@@ -338,8 +379,11 @@ def  output_Programs_data(Programs_data_df):
         len(MDbreakerreplacementscurrentyearddf[
                 MDbreakerreplacementscurrentyearddf['PROJECTSTATUS'] == 'No Capital Spend'])),
         strlist[5]]))
-    print('')
 
+    print('')
+    output_schedule_data(MDbreakerreplacementscurrentyearddf, schedule_df)
+
+#T Line Harding
     print('T Line Harding')
     print(str(date.today().year) + ':')
     print(' '.join([str(
@@ -354,6 +398,9 @@ def  output_Programs_data(Programs_data_df):
         len(Linehardingcurrentyeardf[Linehardingcurrentyeardf['PROJECTSTATUS'] == 'In-Service'])),
         'In-Service']))
 
+    print('')
+    output_schedule_data(Linehardingcurrentyeardf, schedule_df)
+
     print(str(date.today().year + 1) + ':')
     print(' '.join([str(
         len(Linehardingnextyeardf[Linehardingnextyeardf['PROJECTSTATUS'] == 'Released'])),
@@ -367,7 +414,10 @@ def  output_Programs_data(Programs_data_df):
         len(Linehardingnextyeardf[Linehardingnextyeardf['PROJECTSTATUS'] == 'Draft'])),
         'Draft']))
 
+
+
     print('')
+# Water Crossing
     print('Water Crossing')
     print(str(date.today().year) + ':')
     print(' '.join([str(
@@ -384,6 +434,9 @@ def  output_Programs_data(Programs_data_df):
 
     print('')
 
+    print('')
+    output_schedule_data(Watercrossingscurrentyeardf, schedule_df)
+
     print(str(date.today().year + 1) + ':')
     print(' '.join([str(
         len(Watercrossingsnextyeardf[Watercrossingsnextyeardf['PROJECTSTATUS'] == 'Released'])),
@@ -396,6 +449,22 @@ def  output_Programs_data(Programs_data_df):
     print(' '.join([str(
         len(Watercrossingsnextyeardf[Watercrossingsnextyeardf['PROJECTSTATUS'] == 'Draft'])),
         'Draft']))
+
+def cmpc_wide_area_update(projectdf, scedulesdf):
+    budget_items_list = ['00003227', '000032228', '00003229']
+    years_of_interest = [date.today().year, date.today().year + 1]
+    for year in years_of_interest:
+        for month in [6, 12]:
+            for item in budget_items_list:
+                print(year)
+                print(month)
+                projectsofintrestdf = projectdf.query('BUDGETITEMNUMBER == @item & Estimated_In_Service_Date.dt.year == @year & @month-5 <= Estimated_In_Service_Date.dt.month <= @month')
+                projects =  projectsofintrestdf.PETE_ID.unique()
+                program_projects_df = scedulesdf.query('PETE_ID in @projects')
+                print('Budget Item ' + str(item))
+                print(program_projects_df.groupby(['Schedule_Function'])['Percent_Complete'].mean())
+                print(program_projects_df.groupby(['PETE_ID','Schedule_Function'])['Percent_Complete'].mean())
+
 
 def main():
     PAT_Filename = 'PAT Grand Summary Report.xlsx'
@@ -423,17 +492,25 @@ def main():
     # patdf= patdf['PETE_ID','WA_Amount_Grand_Summary']
     Project_Data_df = pd.merge(Project_Data_df, patdf, on='PETE_ID', how='outer')
 
+
+
     Project_Data_df.info()
 
     current_year_tuple = query_Merto_West_Data_current_year(Project_Data_df)
     next_year_tuple = query_Merto_West_Data_next_year(Project_Data_df)
+
     Programs_data_df = query_Programs_data(Project_Data_df)
 
     output_Merto_West_Data_current_year(current_year_tuple)
     output_Merto_West_Data_next_year(next_year_tuple)
 
     bigprojectsnotdareleaseddf = current_year_data_drive_output(current_year_tuple)
-   # bigprojectsnotdareleaseddf.to_csv('metro_west_large_no_da_released.csv')
+    pe_df = PScedules_df.query('Grandchild == "Project Energization"')
+    bigprojectsnotdareleaseddf = pd.merge(bigprojectsnotdareleaseddf, pe_df[['PETE_ID', 'Finish_Date']], on='PETE_ID', how='left')
+    bigprojectsnotdareleaseddf.to_csv('metro_west_large_no_da_released.csv')
+
+
+
 
     #print(bigprojectsnotdareleaseddf)
 
@@ -445,9 +522,9 @@ def main():
    # bigprojectsnotdawPE.to_csv('metro_west_large_PE.csv')
 
 
-    output_Programs_data(Programs_data_df)
+    output_Programs_data(Programs_data_df, PScedules_df)
 
-
+    cmpc_wide_area_update(Project_Data_df, PScedules_df)
 
 
 if __name__ == "__main__":
