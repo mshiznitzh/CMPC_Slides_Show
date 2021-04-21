@@ -450,6 +450,20 @@ def  output_Programs_data(Programs_data_df, schedule_df):
         len(Watercrossingsnextyeardf[Watercrossingsnextyeardf['PROJECTSTATUS'] == 'Draft'])),
         'Draft']))
 
+def cmpc_wide_area_update(projectdf, scedulesdf):
+    budget_items_list = ['00003227', '000032228', '00003229']
+    years_of_interest = [date.today().year, date.today().year + 1]
+    for year in years_of_interest:
+        for month in [6, 12]:
+            for item in budget_items_list:
+                print(year)
+                print(month)
+                projectsofintrestdf = projectdf.query('BUDGETITEMNUMBER == @item & Estimated_In_Service_Date.dt.year == @year & @month-5 <= Estimated_In_Service_Date.dt.month <= @month')
+                projects =  projectsofintrestdf.PETE_ID.unique()
+                program_projects_df = scedulesdf.query('PETE_ID in @projects')
+                print('Budget Item ' + str(item))
+                print(program_projects_df.groupby(['Schedule_Function'])['Percent_Complete'].mean())
+                print(program_projects_df.groupby(['PETE_ID','Schedule_Function'])['Percent_Complete'].mean())
 
 
 def main():
@@ -478,17 +492,25 @@ def main():
     # patdf= patdf['PETE_ID','WA_Amount_Grand_Summary']
     Project_Data_df = pd.merge(Project_Data_df, patdf, on='PETE_ID', how='outer')
 
+
+
     Project_Data_df.info()
 
     current_year_tuple = query_Merto_West_Data_current_year(Project_Data_df)
     next_year_tuple = query_Merto_West_Data_next_year(Project_Data_df)
+
     Programs_data_df = query_Programs_data(Project_Data_df)
 
     output_Merto_West_Data_current_year(current_year_tuple)
     output_Merto_West_Data_next_year(next_year_tuple)
 
     bigprojectsnotdareleaseddf = current_year_data_drive_output(current_year_tuple)
+    pe_df = PScedules_df.query('Grandchild == "Project Energization"')
+    bigprojectsnotdareleaseddf = pd.merge(bigprojectsnotdareleaseddf, pe_df[['PETE_ID', 'Finish_Date']], on='PETE_ID', how='left')
     bigprojectsnotdareleaseddf.to_csv('metro_west_large_no_da_released.csv')
+
+
+
 
     #print(bigprojectsnotdareleaseddf)
 
@@ -502,7 +524,7 @@ def main():
 
     output_Programs_data(Programs_data_df, PScedules_df)
 
-
+    cmpc_wide_area_update(Project_Data_df, PScedules_df)
 
 
 if __name__ == "__main__":
