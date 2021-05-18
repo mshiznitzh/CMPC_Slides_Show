@@ -43,11 +43,12 @@ def Change_Working_Path(path):
 
 
 # Pandas Functions
-def Excel_to_Pandas(filename):
+def Excel_to_Pandas(filename, skiprows=0):
+    logger.info(os.path.abspath(os.getcwd()))
     logger.info('importing file ' + filename)
     df = []
     try:
-        df = pd.read_excel(filename)
+        df = pd.read_excel(filename, skiprows=skiprows)
     except:
         logger.error("Error importing file " + filename, exc_info=True)
 
@@ -481,13 +482,13 @@ def main():
     try:
         PScedules_df = Excel_to_Pandas(Schedules_Filename)
     except:
-        logger.error('Can not find Project Data file')
+        logger.error('Can not find Schedule Data file')
         raise
 
     try:
-        patdf = Excel_to_Pandas(PAT_Filename)
+        patdf = Excel_to_Pandas(PAT_Filename,1)
     except:
-        logger.error('Can not find Project Data file')
+        logger.error('Can not find PAT Data file')
         raise
     # patdf= patdf['PETE_ID','WA_Amount_Grand_Summary']
     Project_Data_df = pd.merge(Project_Data_df, patdf, on='PETE_ID', how='outer')
